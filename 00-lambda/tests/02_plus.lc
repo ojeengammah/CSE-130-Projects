@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------------
+-- DO NOT MODIFY THIS SEGMENT
+-------------------------------------------------------------------------------
+
+let ZERO  = \f x -> x
+let ONE   = \f x -> f x
+let TWO   = \f x -> f (f x)
+let THREE = \f x -> f (f (f x))
+let FOUR  = \f x -> f (f (f (f x)))
+
+let INC   = \n f x -> f (n f x)
+let ADD   = \n m -> n INC m
+let MUL   = \n m -> n (ADD m) ZERO
+
+
+-------------------------------------------------------------------------------
+-- YOU SHOULD ONLY MODIFY THE TEXT BELOW, JUST THE PARTS MARKED AS COMMENTS
+-------------------------------------------------------------------------------
+eval inc_one :
+  INC ONE
+  -- (a) fill in your reductions here
+  =d> (\n f x -> f (n f x)) (\f x -> f x)
+  =b> \f x -> f ((\f x -> f x) f x)
+  =b> \f x -> f ((\x -> f x) x)
+  =b> \f x -> f (f x)  
+  =d> TWO
+
+eval add_zero_zero :
+  ADD ZERO ZERO
+  -- (b) fill in your reductions here
+  =d> (\n m -> n INC m) (\f x -> x) (\f x -> x)
+  =b> (\m -> (\f x -> x) INC m) (\f x -> x)
+  =b> ((\f x -> x) INC (\f x -> x))
+  =b> ((\x -> x) (\f x -> x))
+  =b> (\f x -> x)  
+  =d> ZERO
+
+eval add_two_two :
+  ADD TWO TWO
+  -- (c) fill in your reductions here
+  =d> (\n m -> n INC m) (\f x -> f (f x)) (\f x -> f (f x))
+  =b> (\m -> (\f x -> f (f x)) INC m) (\f x -> f (f x))
+  =b> ((\f x -> f (f x)) INC (\f x -> f (f x)))
+  =b> (\x -> INC (INC x)) (\f x -> f (f x))
+  =b> INC (INC (\f x -> f (f x)))
+  =d> (\n f x -> f (n f x)) (INC (\f x -> f (f x)))
+  =b> \f x -> f (INC (\f x -> f (f x)) f x)
+  =d> \f x -> f (((\n f x -> f (n f x)) (\f x -> f (f x))) f x)
+  =b> \f x -> f ( (\f x -> f ((\f x -> f (f x)) f x)) f x)
+  =b> \f x -> f ( (\x -> f ((\f x -> f (f x)) f x)) x)
+  =b> \f x -> f ( f ((\f x -> f (f x)) f x))
+  =d> \f x -> f ( f ( (\f x -> f (f x)) f x ) )
+  =b> \f x -> f ( f ( (\x -> f (f x )) x ) )
+  =b> \f x -> f ( f ( f (f x)))
+  =d> FOUR
